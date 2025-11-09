@@ -1,0 +1,43 @@
+{
+    "name": "buildtool",
+    "version": "1.0.0",
+    "description": "npm as a build tool",
+    "author": "Antoine Delhomel",
+    "private": true,
+    "devDependencies": {
+        "autoprefixer": "^10.4.2",
+        "copyfiles": "^2.4.1",
+        "css-loader": "^6.7.3",
+        "deep-scan": "^1.0.1",
+        "del-cli": "^4.0.1",
+        "minify": "^8.0",
+        "minimist": "^1.2.2",
+        "nodemon": "^2.0.15",
+        "npm-run-all": "^4.1.5",
+        "postcss": "^8.4.5",
+        "postcss-calc": "^8.0.0",
+        "postcss-cli": "^9.1.0",
+        "postcss-custom-media": "^8.0.0",
+        "sass": "^1",
+        "style-loader": "^3.3.1",
+        "uglify-js": "^3.17.4"
+    },
+    "scripts": {
+        "build": "npm-run-all \"build:*\"",
+        "build:css": "npm-run-all \"css:*\"",
+        "build:js": "npm-run-all \"js:*\"",
+        "css:clean": "del-cli public/build/css/**",
+        "css:compile": "sass --load-path node_modules --style compressed assets/sass:public/build/css",
+        "css:prefix": "postcss public/build/css/**/*.css -d public/build/css/ --base public/build/css/ --use autoprefixer --map",
+        "js:compile": "node js_compiler.js",
+        "map:copy": "copyfiles -u 3 \"public/build/js/**/*.map\" public/var",
+        "watch:css": "nodemon --watch assets/sass -e scss -x \"npm run build:css\"",
+        "watch:js": "nodemon --watch assets/js -e js -x \"npm run build:js\"",
+        "watch": "npm-run-all -p -c \"watch:*\""
+    },
+    "dependencies": {
+    },
+    "sideEffects": [
+        "**/*.js"
+    ]
+}

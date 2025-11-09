@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+
+RewriteRule ^api/([^/]+)/?([^/]*)?/?(.*)?$	api.php?endpoint=$1&action=$2&param=$3	[L,QSA]
+RewriteRule ^((?!api|public).*)$	index.php?path=$1	[L,QSA]
+
+</IfModule>
+
+# Remove mulitviews that interpret name/ as name.php and f*cks everything
+Options -MultiViews

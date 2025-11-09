@@ -1,0 +1,44 @@
+<div id="main_wrapper">
+	<div id="left_header" class="utils">
+		<a href="{HOST}" class="button">
+			<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m148.69 54.107-73.893 73.893 73.893 73.893 20.506-20.506-53.387-53.387 53.387-53.387z" /></svg>
+		</a>
+	</div>
+	<div id="center_header" data-card_id="{CARD_ID}">
+		<h1>{CARD_TITLE}</h1>
+	</div>
+	<div id="right_header" class="utils">
+		<button name="save_card" type="button" data-url="{SAVE_CARD_URL}">
+			<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m121.86 182.27 88.035-88.035-20.506-20.506-67.529 67.529-39.244-39.244-20.506 20.506 39.244 39.244z" /></svg>
+		</button>
+	</div>
+	<div id="card_wrapper" data-card_id="{CARD_ID}">
+		{CARD_CONTENT}
+	</div>
+	<div id="main_utils" class="utils">
+		<a href="{HOST}" id="logo" class="push_left">{LOGO_CONTENT}</a>
+		<div data-toggle-target-id="add_item_form_wrapper" class="form_wrapper invisible">
+			<form action="{ADD_ITEM_URL}" name="add_item_form">
+				<div class="input_group">
+					<input type="text" value="" name="item_content" placeholder="Set an item" required />
+					<input type="hidden" name="card_id" value="{CARD_ID}" />
+					<button name="add_item" type="submit" data-url="{ADD_ITEM_URL}">
+						<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m113.5 58v55.5h-55.5v29h55.5v55.5h29v-55.5h55.5v-29h-55.5v-55.5z" /></svg>
+					</button>
+					<button type="button" data-toggle-target="add_item_form_wrapper" class="phantom">
+						<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m167.24 68.249-39.244 39.244-39.244-39.244-20.506 20.506 39.244 39.244-39.244 39.244 20.506 20.506 39.244-39.244 39.244 39.244 20.506-20.506-39.244-39.244 39.244-39.244z" /></svg>
+					</button>
+				</div>
+				<div class="utils_error"></div>
+			</form>
+		</div>
+		<button type="button" data-toggle-target="add_item_form_wrapper">
+			<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m113.5 58v55.5h-55.5v29h55.5v55.5h29v-55.5h55.5v-29h-55.5v-55.5z" /></svg>
+		</button>
+	</div>
+	<div id="main_overlay" class="invisible"></div>
+</div>
+
+
+<script src="{HOST}/public/lib/turndown@7.2.0.js"></script>
+<script src="{HOST}/public/lib/marked@16.0.0.umd.js"></script>

@@ -1,0 +1,28 @@
+<div id="main_wrapper">
+	<div id="deck_wrapper">
+		<div id="deck">
+			{DECK}
+		</div>
+	</div>
+	<div id="main_utils" class="utils">
+		<a href="{HOST}" id="logo" class="push_left">{LOGO_CONTENT}</a>
+		<div data-toggle-target-id="add_card_form_wrapper" class="form_wrapper invisible">
+			<form action="{ADD_CARD_URL}" name="add_card_form">
+				<div class="input_group">
+					<input type="text" value="" name="card_title" placeholder="Set a card title" required />
+					<button name="add_card" type="submit" data-url="{ADD_CARD_URL}">
+						<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m113.5 58v55.5h-55.5v29h55.5v55.5h29v-55.5h55.5v-29h-55.5v-55.5z" /></svg>
+					</button>
+					<button type="button" data-toggle-target="add_card_form_wrapper" class="phantom">
+						<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m167.24 68.249-39.244 39.244-39.244-39.244-20.506 20.506 39.244 39.244-39.244 39.244 20.506 20.506 39.244-39.244 39.244 39.244 20.506-20.506-39.244-39.244 39.244-39.244z" /></svg>
+					</button>
+				</div>
+				<div class="utils_error"></div>
+			</form>
+		</div>
+		<button type="button" data-toggle-target="add_card_form_wrapper">
+			<svg width="256" height="256" version="1.1" viewBox="0 0 256 256" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="m113.5 58v55.5h-55.5v29h55.5v55.5h29v-55.5h55.5v-29h-55.5v-55.5z" /></svg>
+		</button>
+	</div>
+	<div id="main_overlay" class="invisible"></div>
+</div>

@@ -1,0 +1,6 @@
+{
+    "require": {
+        "league/commonmark": "^2.7",
+        "league/html-to-markdown": "^5.1"
+    }
+}
