@@ -10,6 +10,7 @@ $readable_block_max_width: 40rem;
 	--card-background-color: #fff;
 	--overlay-background-color: hsla(17, 14%, 10%, 0.192);
 	--box-radius: 9px;
+	--gap-s: 0.5em;
 	--gap-l: 1em;
 	--font-size-s: 0.8em;
 	--font-size-l: 1.2em;
@@ -354,6 +355,22 @@ li:has(.custom_checkbox){
 		line-height: 1.2;
 		transform: scale(1);
 		transition: transform ease-out 0.16s;
+		display: flex;
+		align-items: first baseline;
+		> img {
+			--img-size: 2em;
+			width: var(--img-size);
+  			height: var(--img-size);
+			flex-shrink: 0;
+			flex-grow: 0;
+			margin-right: var(--gap-s);
+			// Re-align
+			position: relative;
+			top: calc(var(--img-size) * 0.35);
+			margin-top: calc(-1 * var(--img-size) * 0.35);
+			margin-bottom: calc(var(--img-size) * 0.35);
+			border-radius: 50%;
+		}
 		> a {
 			&:visited {
 				color: #000;

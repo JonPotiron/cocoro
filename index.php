@@ -66,11 +66,16 @@ if(!empty($path)){
 		$markdown = file_get_contents($card->full_path);
 		$document = $parser->parse($markdown);
 		$card_title = \Helper\CommonmarkTreeModificator::extract_h1($document);
-		
+		// $svg = \Helper\Image::generate_github_like_avatar($card_title);
+		$img_relative_path = 'public/cards/'.$card->name.'.png';
+		if(!file_exists(ROOT_PATH.$img_relative_path)){
+			\Helper\Image::generate_github_like_avatar($card_title,ROOT_PATH.$img_relative_path);
+		}
 		$cards_content .= \Helper\Template::parse_template('deck.item.html',[
 			// 'TITLE' => $card->name,
 			'TITLE' => $card_title,
 			'CARD_URL' => HOST.$card->name,
+			'AVATAR_URL' => HOST.$img_relative_path,
  		]);
 	}
 	$content = \Helper\Template::parse_template('deck.html',[

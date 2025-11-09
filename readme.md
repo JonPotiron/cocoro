@@ -13,7 +13,7 @@ The todolist for the lighthearted
 - [ ] Add "app mode" with localStorage save and asynchronous save to the server
 - [ ] Design "empty card" (i.e. 404)
 - [ ] `deck view` Order cards in  : alphabetical ASC / date DESC
-- [ ] `deck view` Generate Github like icons for each card
+- [x] `deck view` Generate Github like icons for each card
 - [x] `deck view` Get title from card content instead of card name
 - [ ] `card view` Order tasks in  : checked after not checked
 - [ ] `card view` Delete button per task

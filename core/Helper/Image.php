@@ -1,6 +1,7 @@
 <?php
 namespace Helper;
 
+define('USE_IMAGICK',false);
 if(extension_loaded('imagick')){
 	define('IMAGICK_INSTALLED',true);
 } else {
@@ -43,7 +44,7 @@ class Image {
 	public static function get_source_object($source_path){
 		$source_image = null;
 		if(is_file($source_path)){
-			if(IMAGICK_INSTALLED){
+			if(USE_IMAGICK && IMAGICK_INSTALLED){
 				$source_image = new \Imagick($source_path);
 				//$source_image->setImageInterpolateMethod(\Imagick::INTERPOLATE_BILINEAR);
 			} else {
@@ -86,7 +87,7 @@ class Image {
 	 * 
 	 */
 	public static function rotate(&$source_image,$angle,$background_color = 'rgb(0,0,0)'){
-		if(IMAGICK_INSTALLED){
+		if(USE_IMAGICK && IMAGICK_INSTALLED){
 			$source_image->rotateImage(new \ImagickPixel($background_color),$angle);
 		} else {
 			$rgb = explode(',',str_replace(['rgb(',')'],'',$background_color));
@@ -110,7 +111,7 @@ class Image {
 	 *
 	 */
 	public static function crop(&$source_image,$width,$height,$x,$y){
-		if(IMAGICK_INSTALLED){
+		if(USE_IMAGICK && IMAGICK_INSTALLED){
 			$source_image->cropImage($width,$height,$x,$y);
 		} else {
 			$crop_info =
@@ -138,7 +139,7 @@ class Image {
 	 *
 	 */
 	public static function scale(&$source_image,$width,$height,$boxed = true){
-		if(IMAGICK_INSTALLED){
+		if(USE_IMAGICK && IMAGICK_INSTALLED){
 			$source_image->thumbnailImage($width,$height,$boxed);
 			$source_image->sharpenimage(0.25,0.25);
 		} else {
@@ -171,7 +172,7 @@ class Image {
 	 *
 	 */
 	public static function save(&$source_image,$destination_path){
-		if(IMAGICK_INSTALLED){
+		if(USE_IMAGICK && IMAGICK_INSTALLED){
 			//$source_image->posterizeImage(136,false); // TOO SLOW ON PROD (???) AND NOT SO USEFULL :( //
 			$source_image->transformimagecolorspace(\Imagick::COLORSPACE_SRGB);
 			$source_image->setInterlaceScheme(\Imagick::INTERLACE_PLANE); // PROGRESSIVE JPG IS USELESS WITH LAZY LOADING //
@@ -244,7 +245,7 @@ class Image {
 	 *
 	 */
 	public static function destroy(&$source_image){
-		if(IMAGICK_INSTALLED){
+		if(USE_IMAGICK && IMAGICK_INSTALLED){
 			$source_image->clear();
 		} else {
 			imagedestroy($source_image);
@@ -252,7 +253,7 @@ class Image {
 	}
 	
 	public static function get_pixel_color($source_image,$x,$y){
-		if(IMAGICK_INSTALLED){
+		if(USE_IMAGICK && IMAGICK_INSTALLED){
 			$pixel = $source_image->getImagePixelColor($x,$y);
 			$color = $pixel->getColor();
 		} else {
@@ -352,16 +353,18 @@ class Image {
 		return array($r,$g,$b);
 	}
 	
-	/* Gets hsl values from a rgb array
+	/**
+	 * Gets hsl values from a rgb array
 	 *
 	 * @param array $rgb [r,g,b]
 	 * @return array [h,s,l]
 	 *
 	 */
-	public static function rgb_to_hsl($rgb){
-		$r = $rgb[0]/255;
-		$g = $rgb[1]/255;
-		$b = $rgb[2]/255;
+	public static function rgb_to_hsl(array $rgb): array
+	{
+		$r = ($rgb['r'] ?? $rgb[0] ?? 0)/255;
+		$g = ($rgb['g'] ?? $rgb[1] ?? 0)/255;
+		$b = ($rgb['b'] ?? $rgb[2] ?? 0)/255;
 		$max = max($r,$g,$b);
 		$min = min($r,$g,$b);
 		$h = $s = $l = ($max+$min)/2;
@@ -388,6 +391,64 @@ class Image {
 		
 		return array($h,$s,$l);
 	}
+
+	/**
+	 * Dirzetcly from https://stackoverflow.com/a/20440417
+	 */
+	public static function hsl_to_rgb(array $hsl): array
+	{
+		$h = ($hsl['h'] ?? $hsl[0] ?? 0) / 360;
+		$s = ($hsl['s'] ?? $hsl[1] ?? 0) / 100;
+		$l = ($hsl['l'] ?? $hsl[2] ?? 0) / 100;
+
+        $r = $l;
+        $g = $l;
+        $b = $l;
+        $v = ($l <= 0.5) ? ($l * (1.0 + $s)) : ($l + $s - $l * $s);
+        if ($v > 0){
+			$m = $l + $l - $v;
+			$sv = ($v - $m ) / $v;
+			$h *= 6.0;
+			$sextant = floor($h);
+			$fract = $h - $sextant;
+			$vsf = $v * $sv * $fract;
+			$mid1 = $m + $vsf;
+			$mid2 = $v - $vsf;
+			switch ($sextant) {
+				case 0:
+					$r = $v;
+					$g = $mid1;
+					$b = $m;
+					break;
+				case 1:
+					$r = $mid2;
+					$g = $v;
+					$b = $m;
+					break;
+				case 2:
+					$r = $m;
+					$g = $v;
+					$b = $mid1;
+					break;
+				case 3:
+					$r = $m;
+					$g = $mid2;
+					$b = $v;
+					break;
+				case 4:
+					$r = $mid1;
+					$g = $m;
+					$b = $v;
+					break;
+				case 5:
+					$r = $v;
+					$g = $m;
+					$b = $mid2;
+					break;
+			}
+        }
+        return array('r' => round($r * 255), 'g' => round($g * 255), 'b' => round($b * 255));
+	}
 	
 	/**
 	 * Gets the perveived brightness from a rgb array.
@@ -402,28 +463,11 @@ class Image {
 		return (sqrt((0.299*pow($rgb[0],2))+(0.587*pow($rgb[1],2))+(0.114*pow($rgb[2],2)))) / 255;
 	}
 	
-	/*
-	 * Tries to get a css "background-position" attribute from filename.
-	 * Checks if filename contains positionning (as "center_left" for example) and returns it (as "center left").
-	 * Defaults to "center center" if not found.
-	 *
-	 * @param string $filename
-	 * @return string
-	 *
-	 */
-	public static function get_image_positionning_from_filename($filename){
-		$position = 'center center';
-		if(preg_match('/(left|right|top|bottom|center)_(left|right|top|bottom|center)/',$filename,$matches)){
-			$position = $matches[1].' '.$matches[2];
-		}
-		return $position;
-	}
-	
 	/**
 	* Lightens/darkens a given colour (hex format), returning the altered colour in hex format.7
-	* @param str $hex Colour as hexadecimal (with or without hash);
-	* @percent float $percent Decimal ( 0.2 = lighten by 20%(), -0.4 = darken by 40%() )
-	* @return str Lightened/Darkend colour as hexadecimal (with hash);
+	* @param string $hex Colour as hexadecimal (with or without hash);
+	* @param float $percent Decimal ( 0.2 = lighten by 20%(), -0.4 = darken by 40%() )
+	* @return string Lightened/Darkend colour as hexadecimal (with hash);
 	*/
 	public static function color_luminance( $hex, $percent ) {
 		$hex = preg_replace( '/[^0-9a-f]/i', '', $hex );
@@ -442,5 +486,127 @@ class Image {
 		
 		return $new_hex;
 	}
+
+	public static function generate_github_like_avatar(
+		string $string,
+		string $destination_path
+	): string
+	{
+		$hash = md5($string);
+		$hash_parts = [];
+		$min = hexdec('00');
+		$max = hexdec('ff');
+		while(strlen($hash) > 0 ){
+			// transform every 2 bytes in percentage value
+			$hash_parts[] = round((hexdec($hash[0].$hash[1]) - $min) / ($max - $min) * 100);
+			$hash = substr($hash,2,null);
+		}
+		$img_width = 110;
+		$avatar_width = 50;
+		$avatar_offset = ($img_width - $avatar_width) / 2;
+		$pixel_width = $avatar_width / 5;
+		$color = 'hsl(0,100,50)';
+		$background_color = 'hsl(0,100,50)';
+
+		// GET EXTENSION //
+		$image_type = 'png';
+		if(preg_match('/^.+\.(\w+)$/',$destination_path,$match)){
+			$image_type = in_array($match[1], ['png','svg']) ? $match[1] : $image_type;
+		}
+			
+		if(count($hash_parts) == 16){
+			$main_hue = round($hash_parts[15]*3.6);
+			$has_top_pixel = false;
+			$has_bottom_pixel = false;
+
+			$pixel_matrix = [];
+			for($i = 0; $i < 15; $i++){
+				if($hash_parts[$i] >= 50){
+					$y = $i%5;
+					if($i < 5){
+						// first and fifth col
+						$pixel_matrix[] = [
+							'x' => (0*$pixel_width)+$avatar_offset,
+							'y' => ($y*$pixel_width)+$avatar_offset,
+						];
+						$pixel_matrix[] = [
+							'x' => (4*$pixel_width)+$avatar_offset,
+							'y' => ($y*$pixel_width)+$avatar_offset,
+						];
+					} elseif($i < 10){
+						// second and fourth col
+						$pixel_matrix[] = [
+							'x' => (1*$pixel_width)+$avatar_offset,
+							'y' => ($y*$pixel_width)+$avatar_offset,
+						];
+						$pixel_matrix[] = [
+							'x' => (3*$pixel_width)+$avatar_offset,
+							'y' => ($y*$pixel_width)+$avatar_offset,
+						];
+					} else {
+						// third (middle) col
+						$pixel_matrix[] = [
+							'x' => (2*$pixel_width)+$avatar_offset,
+							'y' => ($y*$pixel_width)+$avatar_offset,
+						];
+					}
+
+					$has_top_pixel = $i%5 == 0 ? true : $has_top_pixel;
+					$has_bottom_pixel = $i%5 == 4 ? true : $has_bottom_pixel;
+				}
+			}
+			// Add at least one pixel at top and bottom on center col
+			if(!$has_top_pixel){
+				$pixel_matrix[] = [
+					'x' => (2*$pixel_width)+$avatar_offset,
+					'y' => (0*$pixel_width)+$avatar_offset,
+				];
+			}
+			if(!$has_bottom_pixel){
+				$pixel_matrix[] = [
+					'x' => (2*$pixel_width)+$avatar_offset,
+					'y' => (4*$pixel_width)+$avatar_offset,
+				];
+			}
+
+
+			switch($image_type){
+				case 'svg':
+					$svg_rect_content = '';
+					$color = 'hsl('.$main_hue.',100%,76%)';
+					$background_color = 'hsl('.(($main_hue + 45) % 360).',70%,96%)';
+					foreach($pixel_matrix as $pixel){
+						$svg_rect_content .= '<rect x="'.$pixel['x'].'" y="'.$pixel['y'].'" width="'.$pixel_width.'" height="'.$pixel_width.'" fill="'.$color.'" />';
+					}
+					$svg = 
+						'<?xml version="1.0" standalone="no"?>'
+						.'<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+						.'<svg viewBox="0 0 '.$img_width.' '.$img_width.'" width="'.$img_width.'" height="'.$img_width.'" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">'
+							.'<rect width="100%" height="100%" fill="'.$background_color.'" />'
+							.$svg_rect_content
+						.'</svg>'
+					;
+					if(file_put_contents($destination_path,$svg)){
+						return $destination_path;
+					}
+					break;
+				case 'png':
+				default :
+					$png_image = imagecreate($img_width, $img_width);
+					$rgb = self::hsl_to_rgb([$main_hue,100,76]);
+					$color = imagecolorallocate($png_image, $rgb['r'], $rgb['g'], $rgb['b']);
+					$rgb = self::hsl_to_rgb([$main_hue + 45,70,96]);
+					$background_color = imagecolorallocate($png_image, $rgb['r'], $rgb['g'], $rgb['b']);
+					imagefilltoborder($png_image, 0, 0, $background_color, $background_color);
+					foreach($pixel_matrix as $pixel){
+						imagefilledrectangle($png_image, $pixel['x'], $pixel['y'], $pixel['x']+$pixel_width, $pixel['y']+$pixel_width, $color);
+					}
+					self::save($png_image,$destination_path);
+					return $destination_path;
+					break;
+			}
+		}
+
+		return '';
+	}
 }
-?>
