@@ -1,21 +1,26 @@
 # Cocoro
 
-The todolist for for the lighthearted
+The todolist for the lighthearted
 
 ## Todo
 
-- [] Système de sauvegarde par mail (un gros zip, ou un mail par carte en markdown du coup ?)
-- [] Ajouter un login
-- [] ajouter un meta robot noindex nofollow
-- [] Ajouter un mode app avec sauvegarde en localStorage et sauvegarde serveur asynchrone
-- [] Trier cartes par alpha
-- [] Trier taches par pas coché / coché
-- [] Bouton "suprimer" par tache
-- [] Prendre le titre de la carte à l'intérieur et pas seulement le nom du fichier
-- [] modification du titre
-- [] design générer des icones façon github avec un md5 du titre et 10 couleurs aléatoires
-- [] debug element de liste vide 
-- [] ajouter un bouton pour supprimer un element
-- [] supprimer (archiver ?) une carte
-- [] design "empty card" (i.e. 404)
-- [] debug mobile 100dvh avec le clavier ouvert qui fonctionne pas (problème de grid ? ou de display ?)
+### Feature
+- [ ] Saving system through emailing : one big zip file ? or one email per card with markdown content ?
+- [ ] Add simple login system :
+	- config item for setting public/private deck
+	- private deck protected behind simple password saved in an .htpasswd like file
+- [ ] Add meta robot noindex nofollow
+- [ ] Add "app mode" with localStorage save and asynchronous save to the server
+- [ ] Design "empty card" (i.e. 404)
+- [ ] `deck view` Order cards in  : alphabetical ASC / date DESC
+- [ ] `deck view` Generate Github like icons for each card
+- [x] `deck view` Get title from card content instead of card name
+- [ ] `card view` Order tasks in  : checked after not checked
+- [ ] `card view` Delete button per task
+- [ ] `card view` Title edit
+- [ ] `card view` Delete (archive ?) card
+
+
+### Debug
+- [ ] Empty tasks 
+- [ ] 100dvh with open keyboard on Android doesn't work (what about ios ?) : grid problem ? display absolute problem ?)
